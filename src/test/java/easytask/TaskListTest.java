@@ -1,3 +1,6 @@
+/**
+ * Houde Yu
+ */
 package easytask;
 
 import org.junit.jupiter.api.Test;
@@ -11,8 +14,18 @@ class TaskListTest {
     @Test
     void testAddAndGetAllTasks() {
         TaskList taskList = new TaskList();
-        Task t1 = new Task("Task1", "Desc", LocalDate.of(2025, 7, 30), "High");
-        Task t2 = new Task("Task2", "Desc", LocalDate.of(2025, 8, 1), "Low");
+        Task t1 = new Task("Task1", "Desc", LocalDate.of(2025, 7, 30), "High") {
+            @Override
+            public String getDetails() {
+                return null;
+            }
+        };
+        Task t2 = new Task("Task2", "Desc", LocalDate.of(2025, 8, 1), "Low") {
+            @Override
+            public String getDetails() {
+                return null;
+            }
+        };
 
         taskList.addTask(t1);
         taskList.addTask(t2);
@@ -26,7 +39,12 @@ class TaskListTest {
     @Test
     void testRemoveTask() {
         TaskList taskList = new TaskList();
-        Task t1 = new Task("Task1", "Desc", LocalDate.of(2025, 7, 30), "High");
+        Task t1 = new Task("Task1", "Desc", LocalDate.of(2025, 7, 30), "High") {
+            @Override
+            public String getDetails() {
+                return null;
+            }
+        };
 
         taskList.addTask(t1);
         assertEquals(1, taskList.getAllTasks().size());

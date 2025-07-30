@@ -1,69 +1,64 @@
 package easytask;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 /**
- * Manual unit tests for Task and TaskList classes.
+ * Manual unit tests for Task class hierarchy and polymorphism.
+ * @author Houde Yu
  */
 public class TestHarness {
 
+    // Constructor
     public TestHarness() {
         System.out.println("🧪 Starting manual tests...");
-
-        testTaskClass();
-        testTaskListClass();
-
-        System.out.println("✅ All manual tests completed.");
     }
 
-    private void testTaskClass() {
-        System.out.println("\n--- Testing Task Class ---");
+    /**
+     * Test method for inheritance and polymorphism.
+     */
+    public void testClassHierarchy() {
+        System.out.println("\n--- Testing Class Hierarchy with Inheritance ---");
 
-        // Create a Task
-        Task task = new Task("Write report", "Finish M03-A01 hand test",
-                LocalDate.of(2025, 7, 30), "High");
+        ArrayList<Task> tasks = new ArrayList<>();
 
-        // Test getters
-        System.out.println("Title: " + task.getTitle());
-        System.out.println("Description: " + task.getDescription());
-        System.out.println("Due Date: " + task.getDueDate());
-        System.out.println("Priority: " + task.getPriority());
-        System.out.println("Completed: " + task.isCompleted());
+        // Create sub-class objects
+        Task schoolTask = new SchoolTask("Finish Essay", "Write a paper on Java Inheritance",
+                LocalDate.of(2025, 8, 5), "High", "IST411");
 
-        // Test setters
-        task.setTitle("Write final report");
-        task.setDescription("Finish M03-A01 + polish");
-        task.setDueDate(LocalDate.of(2025, 8, 1));
-        task.setPriority("Medium");
-        task.setCompleted(true);
+        Task personalTask = new PersonalTask("Go Jogging", "Run 5km in the park",
+                LocalDate.of(2025, 8, 2), "Medium", "Health");
 
-        // Print updated task
-        System.out.println("Updated Task: " + task.toString());
+        // Add to list
+        tasks.add(schoolTask);
+        tasks.add(personalTask);
+
+        // Polymorphic loop
+        for (Task task : tasks) {
+            System.out.println(task.getDetails());
+        }
     }
 
-    private void testTaskListClass() {
-        System.out.println("\n--- Testing TaskList Class ---");
+    /**
+     * Tests the use of the Notifiable interface and polymorphism with unrelated classes.
+     * Author: Houde Yu
+     */
+    public void testInterface() {
+        System.out.println("\n--- Testing Notifiable Interface with Multiple Classes ---");
 
-        TaskList taskList = new TaskList();
+        ArrayList<Notifiable> notifications = new ArrayList<>();
 
-        // Add tasks
-        Task t1 = new Task("Buy milk", "2% fat", LocalDate.of(2025, 7, 31), "Low");
-        Task t2 = new Task("Read book", "Ch.5 - MVC", LocalDate.of(2025, 8, 2), "Medium");
+        // Create objects that implement Notifiable
+        Notifiable reminder = new TaskReminder("Submit report", LocalDate.of(2025, 8, 3));
+        Notifiable quote = new MotivationalQuote("Success is the sum of small efforts, repeated daily.");
 
-        taskList.addTask(t1);
-        taskList.addTask(t2);
+        notifications.add(reminder);
+        notifications.add(quote);
 
-        // Show all tasks
-        System.out.println("All Tasks:");
-        taskList.showAllTasks();
-
-        // Remove task and recheck
-        taskList.removeTask(t1);
-        System.out.println("\nAfter removing one task:");
-        taskList.showAllTasks();
+        // Polymorphic loop
+        for (Notifiable item : notifications) {
+            System.out.println(item.sendNotification());
+        }
     }
 
-    public static void main(String[] args) {
-        new TestHarness(); // Run manual test
-    }
 }

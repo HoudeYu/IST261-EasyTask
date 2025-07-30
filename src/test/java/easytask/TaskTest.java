@@ -1,3 +1,6 @@
+/**
+ * Houde Yu
+ */
 package easytask;
 
 import org.junit.jupiter.api.Test;
@@ -9,7 +12,12 @@ class TaskTest {
 
     @Test
     void testConstructorAndGetters() {
-        Task task = new Task("Write report", "Complete M03", LocalDate.of(2025, 7, 30), "High");
+        Task task = new Task("Write report", "Complete M03", LocalDate.of(2025, 7, 30), "High") {
+            @Override
+            public String getDetails() {
+                return null;
+            }
+        };
 
         assertEquals("Write report", task.getTitle());
         assertEquals("Complete M03", task.getDescription());
@@ -20,7 +28,12 @@ class TaskTest {
 
     @Test
     void testSetters() {
-        Task task = new Task("Initial", "Desc", LocalDate.now(), "Low");
+        Task task = new Task("Initial", "Desc", LocalDate.now(), "Low") {
+            @Override
+            public String getDetails() {
+                return null;
+            }
+        };
 
         task.setTitle("Updated title");
         task.setDescription("Updated desc");
@@ -37,7 +50,12 @@ class TaskTest {
 
     @Test
     void testToString() {
-        Task task = new Task("Read book", "Ch.1-3", LocalDate.of(2025, 8, 2), "Low");
+        Task task = new Task("Read book", "Ch.1-3", LocalDate.of(2025, 8, 2), "Low") {
+            @Override
+            public String getDetails() {
+                return null;
+            }
+        };
         String output = task.toString();
         assertTrue(output.contains("Read book"));
         assertTrue(output.contains("Low"));
