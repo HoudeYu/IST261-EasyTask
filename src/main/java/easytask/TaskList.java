@@ -1,6 +1,3 @@
-/**
- * Houde Yu
- */
 package easytask;
 
 import java.util.ArrayList;
@@ -8,8 +5,10 @@ import java.util.List;
 
 /**
  * Manages a collection of Task objects.
+ * @author Houde Yu
  */
 public class TaskList {
+
     private List<Task> tasks;
 
     public TaskList() {
@@ -26,6 +25,28 @@ public class TaskList {
 
     public List<Task> getAllTasks() {
         return tasks;
+    }
+
+    // Add this to support fetching a task by index
+    public Task getTask(int index) {
+        if (index >= 0 && index < tasks.size()) {
+            return tasks.get(index);
+        }
+        return null;
+    }
+
+    // Replace task at index
+    public void updateTask(int index, Task updatedTask) {
+        if (index >= 0 && index < tasks.size()) {
+            tasks.set(index, updatedTask);
+        }
+    }
+
+    // Remove task by index
+    public void removeTask(int index) {
+        if (index >= 0 && index < tasks.size()) {
+            tasks.remove(index);
+        }
     }
 
     public void showAllTasks() {
