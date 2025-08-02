@@ -17,8 +17,10 @@ public class TaskController {
      * Constructor: initializes data and opens the task list UI.
      */
     public TaskController() {
-        taskList = new TaskList();
-        preloadSampleTasks(); // Preload initial tasks for testing
+        taskList = new TaskList(); // 自动尝试加载本地持久化数据
+        if (taskList.getAllTasks().isEmpty()) {
+            preloadSampleTasks(); // 仅在无数据时才加载样本任务
+        }
         listUI = new TaskListUI(this);
         listUI.setVisible(true);
     }
@@ -46,7 +48,7 @@ public class TaskController {
      * @param task new task to add
      */
     public void addNewTask(Task task) {
-        taskList.addTask(task);
+        taskList.addTask(task); // 内部会自动保存
     }
 
     /**
@@ -56,7 +58,7 @@ public class TaskController {
      * @param updatedTask modified task object
      */
     public void updateTask(int index, Task updatedTask) {
-        taskList.updateTask(index, updatedTask);
+        taskList.updateTask(index, updatedTask); // 内部会自动保存
     }
 
     /**
@@ -64,7 +66,7 @@ public class TaskController {
      * @param index index of task to delete
      */
     public void deleteTask(int index) {
-        taskList.removeTask(index);
+        taskList.removeTask(index); // 内部会自动保存
     }
 
     /**
@@ -73,7 +75,7 @@ public class TaskController {
      * @return Task object
      */
     public Task getTask(int index) {
-        return taskList.getAllTasks().get(index);
+        return taskList.getTask(index); // 使用 TaskList 提供的接口
     }
 
     /**
@@ -86,7 +88,7 @@ public class TaskController {
     }
 
     /**
-     * Adds some dummy data for initial display.
+     * Adds some dummy data only once if no data is loaded.
      */
     private void preloadSampleTasks() {
         taskList.addTask(new SchoolTask("Math HW", "Chapter 5 exercises",

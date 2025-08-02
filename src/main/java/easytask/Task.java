@@ -1,12 +1,13 @@
 package easytask;
 
 import java.time.LocalDate;
+import java.io.Serializable;
 
 /**
  * @author Houde Yu
  * Abstract parent class for all tasks.
  */
-public abstract class Task {
+public abstract class Task implements Serializable {
     protected String title;
     protected String description;
     protected LocalDate dueDate;

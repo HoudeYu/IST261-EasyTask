@@ -1,12 +1,13 @@
 package easytask;
 
 import java.time.LocalDate;
+import java.io.Serializable;
 
 /**
  * Represents a task for school assignments.
  * @author Houde Yu
  */
-public class SchoolTask extends Task {
+public class SchoolTask extends Task implements Serializable {
     private String courseCode;
 
     /**
