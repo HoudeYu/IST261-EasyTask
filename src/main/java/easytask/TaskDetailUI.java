@@ -9,7 +9,7 @@ import java.awt.event.ActionListener;
  * TaskDetailUI displays and edits a single task in the List-Detail UI pattern.
  * Supports updating or deleting a task and returning to the main list.
  *
- * Author: Houde Yu
+ * Author: Houde Yu (updated optional uniqueness check)
  */
 public class TaskDetailUI extends JFrame {
 
@@ -28,12 +28,6 @@ public class TaskDetailUI extends JFrame {
     private JButton deleteButton;
     private JButton cancelButton;
 
-    /**
-     * Constructor
-     * @param controller Reference to the controller
-     * @param task The task to display/edit (null for new task)
-     * @param index Index of the task in the list; -1 if new
-     */
     public TaskDetailUI(TaskController controller, Task task, int index) {
         this.controller = controller;
         this.task = task;
@@ -48,9 +42,6 @@ public class TaskDetailUI extends JFrame {
         setVisible(true);
     }
 
-    /**
-     * Initialize Swing components and layout.
-     */
     private void initComponents() {
         setLayout(new GridLayout(7, 2, 5, 5));
 
@@ -85,14 +76,11 @@ public class TaskDetailUI extends JFrame {
         saveButton.addActionListener(new SaveButtonListener());
         deleteButton.addActionListener(new DeleteButtonListener());
         cancelButton.addActionListener(e -> {
-            dispose();               // Close detail view
-            controller.showListUI(); // Go back to main list
+            dispose();
+            controller.showListUI();
         });
     }
 
-    /**
-     * Fill the input fields with task data, or leave them blank if adding.
-     */
     private void populateFields() {
         if (task != null) {
             titleField.setText(task.getTitle());
@@ -108,7 +96,6 @@ public class TaskDetailUI extends JFrame {
                 tagField.setText("");
             }
         } else {
-            // New task: leave all fields blank
             titleField.setText("");
             descriptionField.setText("");
             dueDateField.setText("");
@@ -117,10 +104,6 @@ public class TaskDetailUI extends JFrame {
         }
     }
 
-    /**
-     * Create a new Task object based on user input.
-     * Determines type based on tag or title pattern.
-     */
     private Task getTaskFromInput() {
         String title = titleField.getText();
         String description = descriptionField.getText();
@@ -135,9 +118,6 @@ public class TaskDetailUI extends JFrame {
         }
     }
 
-    /**
-     * Save updated task to the controller.
-     */
     private class SaveButtonListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             try {
@@ -145,7 +125,14 @@ public class TaskDetailUI extends JFrame {
                 if (taskIndex >= 0) {
                     controller.updateTask(taskIndex, updated);
                 } else {
-                    controller.addNewTask(updated);
+                    // OPTIONAL: enforce unique titles via HashMap index
+                    boolean ok = controller.addNewTaskUnique(updated);
+                    if (!ok) {
+                        JOptionPane.showMessageDialog(TaskDetailUI.this,
+                                "Title already exists. Choose another title.",
+                                "Duplicate Title", JOptionPane.WARNING_MESSAGE);
+                        return;
+                    }
                 }
                 controller.showListUI();
                 dispose();
@@ -157,9 +144,6 @@ public class TaskDetailUI extends JFrame {
         }
     }
 
-    /**
-     * Delete the current task via the controller.
-     */
     private class DeleteButtonListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             if (taskIndex >= 0) {

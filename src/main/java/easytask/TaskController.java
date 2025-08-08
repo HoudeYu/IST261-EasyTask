@@ -6,90 +6,78 @@ import java.util.List;
 /**
  * Controller class in the MVC architecture.
  * Handles interactions between the views and the model.
- * Author: Houde Yu
+ * Author: Houde Yu (updated for Activity 03)
  */
 public class TaskController {
 
     private TaskList taskList;
     private TaskListUI listUI;
 
-    /**
-     * Constructor: initializes data and opens the task list UI.
-     */
+    /** Constructor: initializes data and opens the task list UI. */
     public TaskController() {
-        taskList = new TaskList(); // 自动尝试加载本地持久化数据
+        taskList = new TaskList(); // auto-load persisted data
         if (taskList.getAllTasks().isEmpty()) {
-            preloadSampleTasks(); // 仅在无数据时才加载样本任务
+            preloadSampleTasks(); // only seed when no data yet
         }
         listUI = new TaskListUI(this);
         listUI.setVisible(true);
     }
 
-    /**
-     * Returns all tasks in the list.
-     * @return a List of Task objects
-     */
+    /** Returns all tasks in the list. */
     public List<Task> getAllTasks() {
         return taskList.getAllTasks();
     }
 
-    /**
-     * Called when a task row is selected for detail view.
-     * @param task the task to show/edit
-     * @param rowIndex index of the task in the list; -1 means a new task
-     */
+    /** Show detail view for a selected or new task. */
     public void showTaskDetails(Task task, int rowIndex) {
         new TaskDetailUI(this, task, rowIndex);
     }
 
-    /**
-     * Adds a new task to the list.
-     * Called when a detail view saves a task with rowIndex == -1.
-     * @param task new task to add
-     */
+    /** Add a new task (no uniqueness check). */
     public void addNewTask(Task task) {
-        taskList.addTask(task); // 内部会自动保存
+        taskList.addTask(task);
     }
 
-    /**
-     * Updates a task at the given index.
-     * Called when detail view edits an existing task.
-     * @param index position in list
-     * @param updatedTask modified task object
-     */
+    /** Add new task only if title is unique; return true if added. */
+    public boolean addNewTaskUnique(Task task) {
+        if (task == null || task.getTitle() == null) return false;
+        if (taskList.containsTitle(task.getTitle())) return false;
+        taskList.addTask(task);
+        return true;
+    }
+
+    /** Update a task by index. */
     public void updateTask(int index, Task updatedTask) {
-        taskList.updateTask(index, updatedTask); // 内部会自动保存
+        taskList.updateTask(index, updatedTask);
     }
 
-    /**
-     * Deletes a task at the specified index.
-     * @param index index of task to delete
-     */
+    /** Delete a task by index. */
     public void deleteTask(int index) {
-        taskList.removeTask(index); // 内部会自动保存
+        taskList.removeTask(index);
     }
 
-    /**
-     * Gets a task by index.
-     * @param index position in list
-     * @return Task object
-     */
+    /** Get a task by index. */
     public Task getTask(int index) {
-        return taskList.getTask(index); // 使用 TaskList 提供的接口
+        return taskList.getTask(index);
     }
 
-    /**
-     * Re-displays the TaskListUI and refreshes the table.
-     * Called after returning from TaskDetailUI.
-     */
+    /** Find a task by its title in O(1) average time. */
+    public Task findTaskByTitle(String title) {
+        return taskList.getByTitle(title);
+    }
+
+    /** Delete a task by title; return true if deleted. */
+    public boolean deleteTaskByTitle(String title) {
+        return taskList.removeByTitle(title);
+    }
+
+    /** Re-display the list UI and refresh table. */
     public void showListUI() {
         listUI.refreshTable();
         listUI.setVisible(true);
     }
 
-    /**
-     * Adds some dummy data only once if no data is loaded.
-     */
+    /** Seed sample tasks if storage is empty. */
     private void preloadSampleTasks() {
         taskList.addTask(new SchoolTask("Math HW", "Chapter 5 exercises",
                 LocalDate.of(2025, 8, 1), "High", "MATH101"));
