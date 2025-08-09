@@ -6,7 +6,7 @@ import java.awt.*;
 /**
  * TaskListUI displays a table of tasks and buttons for interaction.
  * This is the main list view in the List-Detail user interface pattern.
- * Author: Houde Yu (updated for Activity 03)
+ * Author: Houde Yu (updated for Activity 03 & 04)
  */
 public class TaskListUI extends JFrame {
 
@@ -21,7 +21,7 @@ public class TaskListUI extends JFrame {
         this.taskTable = new JTable(tableModel);
 
         setTitle("EasyTask - Task List");
-        setSize(720, 420);
+        setSize(800, 460);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null); // center the window
 
@@ -33,29 +33,37 @@ public class TaskListUI extends JFrame {
     private void initComponents() {
         JPanel mainPanel = new JPanel(new BorderLayout());
 
+        // Center: table
         JScrollPane scrollPane = new JScrollPane(taskTable);
         taskTable.setFillsViewportHeight(true);
         mainPanel.add(scrollPane, BorderLayout.CENTER);
 
+        // South: buttons
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        JButton detailsButton = new JButton("Show Details");
-        JButton addButton = new JButton("Add Task");
-        JButton deleteButton = new JButton("Delete Task");
-        JButton findByTitleButton = new JButton("Find by Title");        // NEW
-        JButton deleteByTitleButton = new JButton("Delete by Title");    // NEW
-        JButton quitButton = new JButton("Quit");
+        JButton detailsButton        = new JButton("Show Details");
+        JButton addButton            = new JButton("Add Task");
+        JButton deleteButton         = new JButton("Delete Task");
+        JButton findByTitleButton    = new JButton("Find by Title");       // Activity 03
+        JButton deleteByTitleButton  = new JButton("Delete by Title");     // Activity 03
+        JButton showUrgentButton     = new JButton("Show Most Urgent");    // Activity 04
+        JButton popUrgentButton      = new JButton("Pop Most Urgent");     // Activity 04
+        JButton quitButton           = new JButton("Quit");
 
         buttonPanel.add(detailsButton);
         buttonPanel.add(addButton);
         buttonPanel.add(deleteButton);
-        buttonPanel.add(findByTitleButton);     // NEW
-        buttonPanel.add(deleteByTitleButton);   // NEW
+        buttonPanel.add(findByTitleButton);
+        buttonPanel.add(deleteByTitleButton);
+        buttonPanel.add(showUrgentButton);
+        buttonPanel.add(popUrgentButton);
         buttonPanel.add(quitButton);
 
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
         setContentPane(mainPanel);
 
-        // Action Listeners
+        // ===== Listeners =====
+
+        // Open detail window for selected row
         detailsButton.addActionListener(e -> {
             int selectedRow = taskTable.getSelectedRow();
             if (selectedRow >= 0) {
@@ -68,11 +76,13 @@ public class TaskListUI extends JFrame {
             }
         });
 
+        // Add new task
         addButton.addActionListener(e -> {
             controller.showTaskDetails(null, -1);
             setVisible(false);
         });
 
+        // Delete selected row
         deleteButton.addActionListener(e -> {
             int selectedRow = taskTable.getSelectedRow();
             if (selectedRow >= 0) {
@@ -84,7 +94,7 @@ public class TaskListUI extends JFrame {
             }
         });
 
-        // NEW: Find by Title
+        // Activity 03: Find by title (O(1) via HashMap index)
         findByTitleButton.addActionListener(e -> {
             String title = JOptionPane.showInputDialog(this, "Enter title to search:");
             if (title != null && !title.isBlank()) {
@@ -100,7 +110,7 @@ public class TaskListUI extends JFrame {
             }
         });
 
-        // NEW: Delete by Title
+        // Activity 03: Delete by title (O(1) lookup + remove)
         deleteByTitleButton.addActionListener(e -> {
             String title = JOptionPane.showInputDialog(this, "Enter title to delete:");
             if (title != null && !title.isBlank()) {
@@ -113,6 +123,45 @@ public class TaskListUI extends JFrame {
             }
         });
 
+        // Activity 04: Show (peek) most urgent task (PriorityQueue)
+        showUrgentButton.addActionListener(e -> {
+            Task t = controller.peekMostUrgentTask();
+            if (t == null) {
+                JOptionPane.showMessageDialog(this, "No tasks in queue.",
+                        "Most Urgent", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                String msg = String.format(
+                        "Title: %s%nDue: %s%nPriority: %s%nDesc: %s",
+                        t.getTitle(),
+                        (t.getDueDate() == null ? "N/A" : t.getDueDate().toString()),
+                        (t.getPriority() == null ? "N/A" : t.getPriority()),
+                        (t.getDescription() == null ? "" : t.getDescription())
+                );
+                JOptionPane.showMessageDialog(this, msg,
+                        "Most Urgent (Peek)", JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
+
+        // Activity 04: Pop (remove) most urgent task (PriorityQueue + list sync)
+        popUrgentButton.addActionListener(e -> {
+            Task t = controller.popMostUrgentTask();
+            if (t == null) {
+                JOptionPane.showMessageDialog(this, "No tasks to pop.",
+                        "Pop Most Urgent", JOptionPane.WARNING_MESSAGE);
+            } else {
+                String msg = String.format(
+                        "Popped: %s (due %s, prio %s)",
+                        t.getTitle(),
+                        (t.getDueDate() == null ? "N/A" : t.getDueDate().toString()),
+                        (t.getPriority() == null ? "N/A" : t.getPriority())
+                );
+                JOptionPane.showMessageDialog(this, msg,
+                        "Pop Most Urgent", JOptionPane.INFORMATION_MESSAGE);
+                refreshTable(); // reflect removal in table
+            }
+        });
+
+        // Exit
         quitButton.addActionListener(e -> System.exit(0));
     }
 

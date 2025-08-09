@@ -61,6 +61,17 @@ public class TaskController {
         return taskList.getTask(index);
     }
 
+    /** Activity 04: see most-urgent task without removing. */
+    public Task peekMostUrgentTask() {
+        return taskList.peekMostUrgent();
+    }
+
+    /** Activity 04: pop (remove) the most-urgent task from storage. */
+    public Task popMostUrgentTask() {
+        return taskList.popMostUrgent();
+    }
+
+
     /** Find a task by its title in O(1) average time. */
     public Task findTaskByTitle(String title) {
         return taskList.getByTitle(title);
